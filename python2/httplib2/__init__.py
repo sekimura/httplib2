@@ -390,7 +390,12 @@ def _decompressContent(response, new_content):
             if encoding == 'gzip':
                 content = gzip.GzipFile(fileobj=StringIO.StringIO(new_content)).read()
             if encoding == 'deflate':
-                content = zlib.decompress(content)
+                # when decoding "deflate" you have to try both zlib and deflate formats
+                # https://code.google.com/p/httplib2/issues/detail?id=69#c11
+                try:
+                    content = zlib.decompress(content, -zlib.MAX_WBITS)
+                except zlib.error:
+                    content = zlib.decompress(content)
             response['content-length'] = str(len(content))
             # Record the historical presence of the encoding in a way the won't interfere.
             response['-content-encoding'] = response['content-encoding']
