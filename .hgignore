@@ -1,0 +1,7 @@
+syntax: glob
+build
+dist
+upload.py
+**.pyc
+.cache
+MANIFEST
